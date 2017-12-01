@@ -8,7 +8,7 @@ namespace WebApi.Models
     public class Ticket
     {
         public int Id { get; set; }
-        public string Prefix { get; set; }
+        public char Category { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsClosed { get; set; }
     }

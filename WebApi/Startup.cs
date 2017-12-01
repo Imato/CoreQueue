@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApi.Data;
+using WebApi.Models;
+using WebApi.Controllers;
+using WebApi.Services;
 
 namespace WebApi
 {
@@ -29,11 +32,13 @@ namespace WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IQueueRepository r)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                r.AddTickets(TestDataProducer.GetTickets());
+                r.AddCategories(TestDataProducer.GeCategories());
             }
 
             app.UseMvc();

@@ -8,44 +8,72 @@ namespace WebApi.Data
 {
     public class QueueSimpleRepository : IQueueRepository
     {
-        Dictionary<int, Ticket> _repository;
+        Dictionary<int, Ticket> _tickets;
+        Dictionary<char, Category> _categories;
 
         public QueueSimpleRepository()
         {
-            _repository = new Dictionary<int, Ticket>();
-            AddTestDate();
+            _tickets = new Dictionary<int, Ticket>();
+            _categories = new Dictionary<char, Category>();
+
         }
-        public void Add(Ticket ticket)
+        public void AddTicket(Ticket ticket)
         {
-            _repository.Add(ticket.Id, ticket);
+            if (_tickets.Keys.FirstOrDefault(x => x == ticket.Id) != null)
+                _tickets.Remove(ticket.Id);
+            _tickets.Add(ticket.Id, ticket);
+        }
+
+        public void AddTickets(IEnumerable<Ticket> tickets)
+        {
+            tickets.All(t => { _tickets.Add(t.Id, t); return true; });            
         }
 
         public void Close(Ticket ticket)
         {
-            _repository[ticket.Id].IsClosed = true;
+            //_repository[ticket.Id].IsClosed = true;
+            _tickets.Remove(ticket.Id);
         }
 
         public IEnumerable<Ticket> GetQueue()
         {
-            return _repository.Values.Where(t => !t.IsClosed);
+            return _tickets.Values.Where(t => !t.IsClosed);
         }
 
-        private void AddTestDate()
+        public Ticket GetTicket(int id)
         {
-            var t = new Ticket()
-            {
-                Id = 1,
-                Prefix = "T",
-                CreateDate = new DateTime()
-            };
-            _repository.Add(t.Id, t);
-            t = new Ticket()
-            {
-                Id = 2,
-                Prefix = "T",
-                CreateDate = new DateTime()
-            };
-            _repository.Add(t.Id, t);
+            return _tickets[id];
         }
-    }
+
+        public IEnumerable<Category> GetCategories()
+        {
+            return _categories.Values;
+        }
+
+        public Category GetCategory(char id)
+        {
+            return _categories[id];
+        }
+
+        public void AddCategory(Category c)
+        {
+            _categories.Add(c.Id, c);
+        }
+
+        public void AddCategories(IEnumerable<Category> cats)
+        {
+            cats.All(c => { _categories.Add(c.Id, c); return true; });
+        }
+
+        public int GetLastTicketId()
+        {
+            return _tickets.Keys.Max();
+        }
+
+        public IEnumerable<Ticket> GetTickets()
+        {
+            return _tickets.Values;
+        }
+    }   
+    
 }
